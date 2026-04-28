@@ -1,0 +1,33 @@
+import urllib.request      # 인터넷으로 데이터 가져올 때 쓰는거
+import json                # 가져온 데이터(JSON)를 파이썬으로 바꿔줌
+import tkinter             # 화면 창 만들 때 쓰는거
+import tkinter.font        # 글자 크기 설정하려고 사용
+
+API_KEY = "7faaac12de74c5aa9969869355cecce2"   # 발급받은 API 키 넣는 곳
+
+def tick1Min():
+    # 서울 날씨 정보 가져오는 주소
+    url = f"https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid={API_KEY}&units=metric"
+    
+    with urllib.request.urlopen(url) as r:   # 주소로 요청 보내기
+        data = json.loads(r.read())          # 받은 데이터를 읽어서 변환
+    
+    temp = data["main"]["temp"]              # 온도 값 가져오기
+    humi = data["main"]["humidity"]          # 습도 값 가져오기
+    
+    label.config(text=f"{temp:.1f}C {humi}%")  # 화면에 온도랑 습도 표시
+    
+    window.after(60000, tick1Min)            # 1분 뒤에 다시 실행 (자동 업데이트)
+
+window = tkinter.Tk()                        # 창 만들기
+window.title("TEMP HUMI DISPLAY")            # 창 이름 설정
+window.geometry("400x100")                   # 창 크기 설정
+window.resizable(False, False)               # 창 크기 못 바꾸게 설정  
+
+font = tkinter.font.Font(size=30)            # 글자 크게 보이게 설정
+
+label = tkinter.Label(window, text="", font=font)  # 글자 표시할 공간 만들기
+label.pack()                                 # 창에 배치
+
+tick1Min()                                   # 처음 실행할 때 한번 실행
+window.mainloop()                            # 창 계속 켜두기
