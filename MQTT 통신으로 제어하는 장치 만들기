@@ -1,0 +1,48 @@
+import paho.mqtt.client as mqtt   # MQTT 통신 라이브러리 불러오기
+import time                       # 시간 관련 기능 사용
+from gpiozero import LED          # LED 제어 라이브러리 불러오기
+import threading                  # 동시에 작업하기 위한 스레드 사용
+
+greenLed = LED(16)   # 초록 LED를 GPIO 16번 핀에 연결
+blueLed = LED(20)    # 파랑 LED를 GPIO 20번 핀에 연결
+redLed = LED(21)     # 빨강 LED를 GPIO 21번 핀에 연결
+
+
+def on_message(client, userdata, msg):   # 메시지를 받으면 실행되는 함수
+    print(msg.topic + " " + str(msg.payload))   # 받은 토픽과 메시지 출력
+    message = msg.payload.decode()   # 바이트 데이터를 문자열로 변환
+    print(message)   # 변환된 메시지 출력
+    if message == "green_on":   # 메시지가 green_on이면
+        greenLed.on()           # 초록 LED 켜기
+    elif message == "green_off":   # 메시지가 green_off이면
+        greenLed.off()             # 초록 LED 끄기
+    elif message == "blue_on":   # 메시지가 blue_on이면
+        blueLed.on()             # 파랑 LED 켜기
+    elif message == "blue_off":   # 메시지가 blue_off이면
+        blueLed.off()             # 파랑 LED 끄기
+    elif message == "red_on":   # 메시지가 red_on이면
+        redLed.on()             # 빨강 LED 켜기
+    elif message == "red_off":   # 메시지가 red_off이면
+        redLed.off()             # 빨강 LED 끄기
+
+client = mqtt.Client()   # MQTT 클라이언트 생성
+client.on_message = on_message   # 메시지를 받으면 on_message 함수 실행
+
+broker_address = "192.168.0.61"   # MQTT 브로커 IP 주소 설정
+client.connect(broker_address)   # 브로커에 연결
+client.subscribe("led", 1)   # led 토픽 구독
+
+count = 0   # 숫자 저장 변수
+def send_thread():   # 메시지를 계속 보내는 함수
+    global count   # 전역변수 count 사용
+    while True:   # 무한 반복
+        count = count + 1   # 숫자 1 증가
+        client.publish("hello", str(count))   # hello 토픽으로 숫자 전송
+        print("Publish :", count)   # 보낸 숫자 출력
+        time.sleep(1.0)   # 1초 대기
+
+
+task = threading.Thread(target=send_thread)   # send_thread를 스레드로 생성
+task.start()   # 스레드 시작
+
+client.loop_forever()   # 계속 메시지 받기
