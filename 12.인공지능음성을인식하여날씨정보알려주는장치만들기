@@ -3,7 +3,7 @@ import requests # 인터넷에서 데이터 가져올 때 사용
 import os # 시스템 명령어 실행
 import time # 시간 관련 기능
 
-API_KEY = "" # OpenWeatherMap API 키
+API_KEY = "7faaac12de74c5aa9969869355cecce2" # OpenWeatherMap API 키
 url = f"https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid={API_KEY}&units=metric" # 서울 날씨 정보 요청 주소
 
 def speak(option, msg): # 음성 출력 함수
