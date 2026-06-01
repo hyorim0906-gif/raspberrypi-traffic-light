@@ -7,7 +7,7 @@ greenLed = LED(16)   # 녹색 LED (정상 상태)
 redLed = LED(21)     # 빨간 LED (졸음 상태)
 
 # MQTT 설정
-broker_address = "192.168.137.230"  # MQTT 브로커 IP 주소
+broker_address = "10.60.3.199"  # MQTT 브로커 IP 주소
 client = mqtt.Client()
 client.connect(broker_address)
 
